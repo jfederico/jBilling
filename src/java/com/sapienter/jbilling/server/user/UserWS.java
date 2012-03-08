@@ -93,9 +93,9 @@ public class UserWS implements WSSecured, Serializable {
     private String owingBalance = null;
     private Integer balanceType = null;
     private String dynamicBalance = null;
-    @Digits(integer = 22, fraction = 10, message="validation.error.not.a.number")
+    @Digits(integer = 22, fraction = 2, message="validation.error.not.a.number")
     private String autoRecharge = null;
-    @Digits(integer = 22, fraction = 10, message="validation.error.not.a.number")
+    @Digits(integer = 22, fraction = 2, message="validation.error.not.a.number")
     private String creditLimit = null;
 
     private String notes;
