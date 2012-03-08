@@ -78,7 +78,10 @@ class BlacklistController {
     def save = {
         def replace = params.csvUpload == 'modify'
         def file = request.getFile('csv');
-
+            if(!params.csv.getContentType().toString().contains('application/octet-stream')){
+            flash.error = "csv.error.found"
+                redirect action: 'list'
+            }
         if (!file.empty) {
             def csvFile = File.createTempFile("blacklist", ".csv")
             file.transferTo(csvFile)
