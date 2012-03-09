@@ -54,6 +54,8 @@ import org.hibernate.criterion.Criterion
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import com.sapienter.jbilling.server.user.ContactWS
 import com.sapienter.jbilling.server.user.contact.db.ContactDAS
+import com.sapienter.jbilling.server.user.contact.ContactFieldTypeWS
+import com.sapienter.jbilling.server.user.contact.db.ContactFieldTypeDAS
 
 @Secured(["MENU_90"])
 class CustomerController {
@@ -276,6 +278,40 @@ class CustomerController {
     @Secured(["hasAnyRole('CUSTOMER_10', 'CUSTOMER_11')"])
     def save = {
         def user = new UserWS()
+        def contactFieldType = new ContactFieldTypeDAS();
+        params.contactField.each {field ->
+        if (contactFieldType.find(new Integer(field.key)).dataType == 'Decimal'){
+            try {
+            if(field.value)
+            Double.parseDouble(field.value)
+            }
+            catch(NumberFormatException e){
+            flash.error = 'custom.contact.field.decimal'
+            flash.args = [contactFieldType.find(new Integer(field.key)).description,'Decimal']
+             redirect action: 'edit' , params: [id : params.user.userId]
+            }
+        }
+        else if (contactFieldType.find(new Integer(field.key)).dataType == 'Integer'){
+            try {
+            if(field.value)
+            Long.parseLong(field.value)
+            }
+            catch(NumberFormatException e){
+            flash.error = 'custom.contact.field.integer'
+            flash.args = [contactFieldType.find(new Integer(field.key)).description,'Integer']
+            redirect action: 'edit' , params: [id : params.user.userId]
+            }
+        }
+        else if (contactFieldType.find(new Integer(field.key)).dataType == 'Boolean'){
+            if(field.value && !(field.value.equalsIgnoreCase('true') || field.value.equalsIgnoreCase('false')))
+            {
+            flash.error = 'custom.contact.field.boolean'
+            flash.args = [contactFieldType.find(new Integer(field.key)).description,'Boolean']
+            redirect action: 'edit' , params: [id : params.user.userId]
+            }
+        }
+        }
+
         UserHelper.bindUser(user, params)
 
         def contacts = []
